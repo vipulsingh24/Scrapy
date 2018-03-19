@@ -1,5 +1,23 @@
 import scrapy
 
+
+class QuotesSpider(scrapy.Spider):
+    name = "quotes"
+    start_urls = [
+        'http://quotes.toscrape.com/tag/humor/',
+    ]
+
+    def parse(self, response):
+        for quote in response.css('div.quote'):
+            yield {
+                'text': quote.css('span.text::text').extract_first(),
+                'author': quote.xpath('span/small/text()').extract_first(),
+            }
+
+        next_page = response.css('li.next a::attr("href")').extract_first()
+        if next_page is not None:
+            yield response.follow(next_page, self.parse)
+
 """
 class QoutesSpider(scrapy.Spider):
 	name = 'quotes'
@@ -36,6 +54,8 @@ class QoutesSpider(scrapy.Spider):
 			next_page = response.urljoin(next_page)
 			yield scrapy.Request(next_page, callback=self.parse)
 """
+
+'''
 # Shortcut for creating Request object
 
 class QoutesSpider(scrapy.Spider):
@@ -53,5 +73,4 @@ class QoutesSpider(scrapy.Spider):
 		next_page = response.css('li.next a::attr(href)').extract_first()
 		if next_page is not None:			
 			yield response.follow(next_page, callback=self.parse)
-
-
+'''
