@@ -34,7 +34,8 @@ class ScrapeTextSpider(scrapy.Spider):
 		item = MyItem()
 		item['link'] = response.url
 		item['headline'] = response.xpath('//div[@class="article"]/h1[@class="title"]/text()').extract()
-		if response.xpath('//div[@class="article"]/div[5][@class="lead-img-cont"]').extract():
+		if ( response.xpath('//div[@class="article"]/div[5][@class="lead-img-cont"]').extract() or\
+			(response.xpath('//div[@class="article"]/div[5][@class="lead-img-cont lead-img-verticle"]').extract())):
 			item['text'] = response.xpath('//div[@class="article"]/div[8]/p/text()').extract()
 		else:
 			item['text'] = response.xpath('//div[@class="article"]/div[7]/p/text()').extract()
